@@ -1,0 +1,28 @@
+{% extends "flashcards/base.html" %}
+{% load bootstrap4%}
+
+{% block content %}
+  <div class="formgroup">
+    <form action="{% url 'flashcards:edit' %}" method = 'post'>
+      {% csrf_token %}
+
+      <textarea name="text_rep" rows="10" maxlength="2000" required
+      autofocus class="form-control">{{ text_rep }}</textarea>
+      
+      <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
+        <label class="btn btn-secondary active">
+          <input type="radio" name="shuffle" value="no_shuffle" checked> Don't shuffle
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="shuffle" value="shuffle"> Shuffle
+        </label>
+      </div>
+
+      <button name="submit" class="form-control btn-primary btn-block mt-3 mb-3">
+        Submit
+      </button>
+
+    </form>
+  </div>
+
+{% endblock content %}

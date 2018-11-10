@@ -1,0 +1,15 @@
+{% extends "flashcards/base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block content %}
+<div class="card borders-0 rounded-0 card-top-image">
+  <img class="card-img img-fluid" src="{% static 'flashcards/freeimage-13680082-web.jpg' %}" 
+  alt="background image">
+  <div class="card-img-overlay">
+    <br /><br /><br /><br /><br /><br /><br /><br />
+    <a class="btn btn-primary btn-block" href="{% url 'flashcards:quiz' %}" role="button">Start quiz</a>
+    <a class="btn btn-secondary btn-block" href="{% url 'flashcards:edit' %}" role="button">Edit quiz</a>
+  </div>
+</div> 
+{% endblock content %}

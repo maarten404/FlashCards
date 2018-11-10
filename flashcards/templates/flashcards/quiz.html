@@ -1,0 +1,27 @@
+{% extends "flashcards/base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+  <p>Score: {{ score }}/{{ current_question_nr }}</p>
+  
+  <h2>{{ current_question.question }}</h2>
+  <form action="{% url 'flashcards:quiz' %}" method = 'post'>
+    {% csrf_token %}
+    <div class="formgroup">
+      <input type="text" name="answer" maxlength="200" required id="id_answer" 
+      autofocus placeholder="answer..." class="form-control" />
+      <input type="hidden" name="question_id" value = "{{ current_question.id }}">
+      <input type="hidden" name="first_try" value = "{{ first_try }}">
+      {% if first_try == "False" %}
+        <small class="form-text text-muted">
+          Wrong! The right answer is: {{ current_question.answer }}
+        </small>
+      {% endif %}
+      <button name="submit" class="btn btn-primary btn-block mt-3 mb-3">
+        Submit
+      </button>
+    </div>
+
+  </form>
+  
+{% endblock content %}

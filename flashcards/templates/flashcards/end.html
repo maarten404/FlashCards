@@ -1,0 +1,13 @@
+{% extends "flashcards/base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+  
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h4>You're done!</h4>
+      <h1>Score: {{ score }}/{{ current_question_nr }}</h1>
+      <a class="btn btn-primary" href="{% url 'flashcards:index' %}" role="button">Restart</a>
+    </div>
+  </div>
+{% endblock content %}

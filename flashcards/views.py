@@ -27,7 +27,7 @@ def quiz(request):
     # If it is correct, we go to the next question. If it was the first try,
     # the score is increased by one.
     if request.method == 'POST':
-        if(request.POST.get("answer") == QuestionAnswer.objects.get(id=
+        if(str.lower(request.POST.get("answer")) == QuestionAnswer.objects.get(id=
                 request.POST.get("question_id")).answer):
             print("answer correct")
             if request.POST.get("first_try") == "True":

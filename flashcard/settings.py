@@ -141,7 +141,7 @@ if cwd == '/app' or cwd[:4] == '/tmp': # if we're running on Heroku
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     # Only Heroku can host us
-    ALLOWED_HOSTS = ['*.herokuapp.com']
+    ALLOWED_HOSTS = ['chinesecharacters.herokuapp.com']
 
     # We dont want debug info on production
     DEBUG = False

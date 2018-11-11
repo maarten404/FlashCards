@@ -150,3 +150,5 @@ if cwd == '/app' or cwd[:4] == '/tmp': # if we're running on Heroku
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     STATIC_ROOT = 'staticfiles'
 
+# My settings
+LOGIN_URL = '/login/'

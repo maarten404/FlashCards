@@ -26,6 +26,11 @@
         Log in
       </a>
     {% endif %}
+    {% if user.is_staff %}
+      <a class="btn btn-dark btn-block" href="{% url 'flashcards:edit' %}" role="button">
+        Edit
+      </a>
+    {% endif %}
   </div>
 </div> 
 {% endblock content %}

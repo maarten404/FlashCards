@@ -3,7 +3,7 @@
 
 {% block content %}
   <div class="formgroup">
-    <form action="{% url 'flashcards:edit' %}" method = 'post'>
+    <form action="{% url 'flashcards:edit' level.id %}" method = 'post'>
       {% csrf_token %}
 
       <textarea name="text_rep" rows="10" maxlength="2000" required

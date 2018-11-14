@@ -8,9 +8,9 @@
   alt="background image">
   <div class="card-img-overlay">
     <br /><br /><br /><br /><br /><br /><br /><br />
-    <a class="btn btn-primary btn-block" href="{% url 'flashcards:quiz' %}" 
+    <a class="btn btn-primary btn-block" href="{% url 'flashcards:select_level' %}" 
     role="button">
-      Start quiz
+        Start quiz
     </a>
     {% if user.is_authenticated %}
       <a class="btn btn-secondary btn-block" href="{% url 'users:logout' %}" 
@@ -27,9 +27,14 @@
       </a>
     {% endif %}
     {% if user.is_staff %}
-      <a class="btn btn-dark btn-block" href="{% url 'flashcards:edit' %}" role="button">
-        Edit
-      </a>
+      <form action="{% url 'flashcards:select_level' %}" method = 'post'>
+      {% csrf_token %}
+      <div class="formgroup">
+        <input type="hidden" name="next_page" value = "edit">
+        <button name="submit" class="btn btn-dark btn-block mt-2 mb-2">
+          Edit
+        </button>
+      </div>
     {% endif %}
   </div>
 </div> 

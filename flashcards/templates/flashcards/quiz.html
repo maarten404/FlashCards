@@ -5,7 +5,7 @@
   <p>Score: {{ score }}/{{ current_question_nr }}</p>
   
   <h2>{{ current_question.question }}</h2>
-  <form action="{% url 'flashcards:quiz' %}" method = 'post'>
+  <form action="{% url 'flashcards:quiz' level_id %}" method = 'post'>
     {% csrf_token %}
     <div class="formgroup">
       <input type="text" name="answer" maxlength="200" id="id_answer" autofocus 

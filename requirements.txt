@@ -7,3 +7,4 @@ gunicorn==19.9.0
 pytz==2018.7
 PyYAML==3.13
 static3==0.7.0
+psycopg2>=2.7.5

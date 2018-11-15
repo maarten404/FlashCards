@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 
-from .models import QuestionAnswer, Level
+from .models import QuestionAnswer, Level, LevelUser
 
 def index(request):
     return render(request, 'flashcards/index.html')
@@ -61,9 +61,24 @@ def quiz(request, level_id):
     # to do: make django do the length in the query
     if(current_question_nr >= 
         len(QuestionAnswer.objects.filter(level_id=level_id))):
+        score = request.session["score"]
         context = {'current_question_nr': current_question_nr,
-                   'score': request.session["score"],
+                   'score': score,
                    'prev_question': prev_question,}
+        if(request.user.is_authenticated):
+            try:
+                topscore = LevelUser.objects.get(level_id=level_id,user=request.user).topscore
+            except LevelUser.DoesNotExist:
+                topscore = 0
+
+            if(score > topscore):
+                LevelUser.objects.filter(level_id=level_id, user=request.user).delete()
+                new_leveluser = LevelUser()
+                new_leveluser.level = Level.objects.get(pk=level_id)
+                new_leveluser.user = request.user
+                new_leveluser.topscore = score
+                new_leveluser.save()
+
         del request.session["current_question_nr"]
         del request.session["score"]
         return render(request, 'flashcards/end.html', context)

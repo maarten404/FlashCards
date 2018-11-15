@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.models import User
 from django.db import models
 
 class Level(models.Model):
@@ -20,3 +21,11 @@ class QuestionAnswer(models.Model):
     def __str__(self):
         representation = str(self.question) + ": " + self.answer
         return representation
+
+class LevelUser(models.Model):
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    topscore = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return str(self.user) + "'s top score on " + str(self.level) + " is " + str(self.topscore)

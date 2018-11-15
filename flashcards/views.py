@@ -62,7 +62,8 @@ def quiz(request, level_id):
     if(current_question_nr >= 
         len(QuestionAnswer.objects.filter(level_id=level_id))):
         context = {'current_question_nr': current_question_nr,
-                   'score': request.session["score"],}
+                   'score': request.session["score"],
+                   'prev_question': prev_question,}
         del request.session["current_question_nr"]
         del request.session["score"]
         return render(request, 'flashcards/end.html', context)

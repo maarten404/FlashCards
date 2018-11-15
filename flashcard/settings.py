@@ -40,6 +40,9 @@ INSTALLED_APPS = [
 
     #external apps
     'bootstrap4',
+    #https://pypi.org/project/django-fontawesome/
+    'fontawesome',
+
 
     #my apps
     'flashcards',

@@ -32,26 +32,27 @@ def quiz(request, level_id):
 
     if "current_question_nr" in request.session:
         current_question_nr = request.session.get("current_question_nr")
-        first_try = "True"
     else:
         current_question_nr = 0
         request.session["current_question_nr"] = 0
         request.session["score"] = 0
-        first_try = "True"
     
-    # if we received an answer, we will check whether it is correct and if so
-    # whether it was a first try. 
-    # If it is correct, we go to the next question. If it was the first try,
-    # the score is increased by one.
+    # if we the answer is correct we add 1 to the score. We give feedback
+    # with the results from the last answer.
+
+    prev_question = {}
+
     if "answer" in request.POST:
-        if(str.lower(request.POST.get("answer")) == 
-            QuestionAnswer.objects.get(id=request.POST.get("question_id")).answer):
-            if request.POST.get("first_try") == "True":
-                request.session["score"] += 1
-            current_question_nr += 1
-            first_try = "True"
+        question = QuestionAnswer.objects.get(id=request.POST.get("question_id"))
+
+        if(str.lower(request.POST.get("answer")) == question.answer):
+            prev_question["correct"] = True
+            request.session["score"] += 1
         else:
-            first_try = "False"
+            prev_question["correct"] = False
+        
+        prev_question["question"] = question
+        current_question_nr += 1
 
 
     # If all questions are done, we go to the end template showing the score
@@ -70,9 +71,9 @@ def quiz(request, level_id):
 
     context = {'current_question': 
         QuestionAnswer.objects.filter(level_id=level_id).order_by('id')[current_question_nr],
-               'score': request.session["score"],
                'current_question_nr': current_question_nr,
-               'first_try': first_try,
+               'prev_question': prev_question,
+               'score': request.session["score"],
                'level_id': level_id,
                }
     return render(request, 'flashcards/quiz.html', context)
@@ -98,7 +99,6 @@ def edit(request,level_id):
         current_question_nr = 0
         request.session["current_question_nr"] = 0
         request.session["score"] = 0
-        first_try = "True"
 
         try:
             shuffle = request.POST.get("shuffle")

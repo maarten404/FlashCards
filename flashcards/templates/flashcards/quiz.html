@@ -1,9 +1,21 @@
 {% extends "flashcards/base.html" %}
 {% load bootstrap4 %}
+{% load fontawesome %}
 
 {% block content %}
-  <p>Score: {{ score }}/{{ current_question_nr }}</p>
-  
+  <p>
+    Score: {{ score }}
+  </p>
+    {% if prev_question %}
+      {% if prev_question.correct == True %}
+        {% fontawesome_icon 'check-circle' color='green' large=True %}
+      {% else %}
+        {% fontawesome_icon 'times-circle' color='red' large=True %}
+      {% endif %}
+      {{ prev_question.question.question }} = {{ prev_question.question.answer }}
+    {% else %}
+      <br />
+    {% endif %}
   <h2>{{ current_question.question }}</h2>
   <form action="{% url 'flashcards:quiz' level_id %}" method = 'post'>
     {% csrf_token %}
@@ -11,12 +23,6 @@
       <input type="text" name="answer" maxlength="200" id="id_answer" autofocus 
       placeholder="answer..." class="form-control" />
       <input type="hidden" name="question_id" value = "{{ current_question.id }}">
-      <input type="hidden" name="first_try" value = "{{ first_try }}">
-      {% if first_try == "False" %}
-        <small class="form-text text-muted">
-          Wrong! The right answer is: {{ current_question.answer }}
-        </small>
-      {% endif %}
       <button name="submit" class="btn btn-primary btn-block mt-3 mb-3">
         Submit
       </button>

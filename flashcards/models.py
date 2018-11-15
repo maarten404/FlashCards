@@ -26,6 +26,18 @@ class LevelUser(models.Model):
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     topscore = models.PositiveSmallIntegerField()
-
+    
+    def award(self):
+        # todo: figure out how to do a count(*) properly
+        potential_score = len(QuestionAnswer.objects.filter(level=self.level))
+        if self.topscore == potential_score:
+            return "🥇"
+        elif self.topscore/potential_score >= .8:
+            return "🥈"
+        elif self.topscore/potential_score >= .5:
+            return "🥉"
+        else:
+            return ""
+    
     def __str__(self):
         return str(self.user) + "'s top score on " + str(self.level) + " is " + str(self.topscore)

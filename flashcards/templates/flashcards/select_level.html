@@ -17,6 +17,11 @@
       {% endif %}
     >
       {{ level.name }}
+      {% for level_id, award in awards.items %}
+        {% if level_id == level.id %}
+        {{ award }}
+        {% endif %}
+      {% endfor %}
     </a>
     {% endfor %}
     <a class="btn btn-secondary btn-block" href="{% url 'flashcards:index' %}" role="button">

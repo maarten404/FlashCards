@@ -18,7 +18,15 @@ def select_level(request):
 
     levels = Level.objects.all()
 
+    awards = {}
+
+    for level in LevelUser.objects.filter(user=request.user):
+        awards[level.level.id] = level.award()
+
+    print(awards)
+        
     context = {'levels': levels,
+               'awards': awards,
                'next_page': next_page,
                }
 
@@ -64,20 +72,22 @@ def quiz(request, level_id):
         score = request.session["score"]
         context = {'current_question_nr': current_question_nr,
                    'score': score,
-                   'prev_question': prev_question,}
-        if(request.user.is_authenticated):
+                   'prev_question': prev_question,
+                   'award': "",}
+        if request.user.is_authenticated:
             try:
                 topscore = LevelUser.objects.get(level_id=level_id,user=request.user).topscore
             except LevelUser.DoesNotExist:
                 topscore = 0
 
-            if(score > topscore):
+            if score >= topscore:
                 LevelUser.objects.filter(level_id=level_id, user=request.user).delete()
                 new_leveluser = LevelUser()
                 new_leveluser.level = Level.objects.get(pk=level_id)
                 new_leveluser.user = request.user
                 new_leveluser.topscore = score
                 new_leveluser.save()
+                context["award"] = new_leveluser.award()
 
         del request.session["current_question_nr"]
         del request.session["score"]

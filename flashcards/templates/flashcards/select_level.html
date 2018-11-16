@@ -24,6 +24,11 @@
       {% endfor %}
     </a>
     {% endfor %}
+    {% if next_page == "edit" %}
+      <a class="btn btn-dark btn-block" href="{% url 'flashcards:edit' 0 %}" role="button">
+        Add level
+      </a>
+    {% endif %}
     <a class="btn btn-secondary btn-block" href="{% url 'flashcards:index' %}" role="button">
       Back
     </a>

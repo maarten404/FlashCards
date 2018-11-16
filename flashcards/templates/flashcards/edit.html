@@ -2,6 +2,24 @@
 {% load bootstrap4%}
 
 {% block content %}
+
+  <script type="text/javascript">
+    window.onload = function() {
+      document.getElementById("id_del_button").disabled = true;
+      document.getElementById("id_checkbox").checked = false;
+    };
+
+    function allowDeleteOrNot() {
+      var del_button = document.getElementById("id_del_button");
+      
+      if(document.getElementById("id_checkbox").checked == true){
+        del_button.disabled = false;
+      } else {
+        del_button.disabled = true;
+      }
+    }
+  </script>
+
   <div class="formgroup">
     <form action="{% url 'flashcards:edit' level.id %}" method = 'post'>
       {% csrf_token %}
@@ -15,7 +33,21 @@
       <button name="submit" class="form-control btn-primary btn-block mt-3 mb-3">
         Submit
       </button>
+    </form>
 
+    <form action="{% url 'flashcards:delete' level.id %}" method = 'post'>
+      {% csrf_token %}
+      <div class="btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary btn-block active" aria-pressed="false" autocomplete="off"
+        onmouseup="allowDeleteOrNot()">
+          <input type="checkbox" id = "id_checkbox"/> 
+          I want to delete this level
+        </label>
+      </div>
+      <button name="submit" class="form-control btn-danger btn-block mt-3 mb-3"
+      id = "id_del_button">
+        Delete this level
+      </button>
     </form>
   </div>
 

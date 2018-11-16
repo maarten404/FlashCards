@@ -7,6 +7,10 @@ from django.shortcuts import get_object_or_404, render, reverse
 from .models import QuestionAnswer, Level, LevelUser
 
 def index(request):
+    if "question_list" in request.session:
+        del request.session["question_list"]
+    if "score" in request.session:
+        del request.session["score"]
     return render(request, 'flashcards/index.html')
 
 def select_level(request):
@@ -103,7 +107,11 @@ def quiz(request, level_id):
 
 @login_required
 def edit(request,level_id):
-    level = get_object_or_404(Level,id=level_id)
+    if level_id != 0:
+        level = get_object_or_404(Level,id=level_id)
+    else:
+        level = Level()
+        level.save()
 
     if request.method != 'POST':
         text_rep = ""
@@ -116,7 +124,7 @@ def edit(request,level_id):
                   }
         return render(request, 'flashcards/edit.html', context)
     else:
-        # We will first update the name of the level, than the questions.
+        # We will update the name of the level and the related questions.
         try:
             name = request.POST.get("name")
         except ValueError:
@@ -142,3 +150,10 @@ def edit(request,level_id):
                 next
 
         return HttpResponseRedirect(reverse('flashcards:index'))
+
+@login_required
+def delete(request,level_id):
+    level = get_object_or_404(Level,id=level_id)
+    level.delete()
+    
+    return HttpResponseRedirect(reverse('flashcards:index'))

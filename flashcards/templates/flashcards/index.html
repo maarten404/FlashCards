@@ -26,6 +26,10 @@
         Log in
       </a>
     {% endif %}
+    <a class="btn btn-secondary btn-block" href="{% url 'flashcards:about' %}" 
+      role="button">
+      About
+    </a>
     {% if user.is_staff %}
       <form action="{% url 'flashcards:select_level' %}" method = 'post'>
       {% csrf_token %}

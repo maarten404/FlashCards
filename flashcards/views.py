@@ -13,6 +13,9 @@ def index(request):
         del request.session["score"]
     return render(request, 'flashcards/index.html')
 
+def about(request):
+    return render(request, 'flashcards/about.html')
+
 def select_level(request):
     # if next_page is not given, default to quiz
     if request.method == 'POST':

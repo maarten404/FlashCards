@@ -6,18 +6,12 @@
     <form action="{% url 'flashcards:edit' level.id %}" method = 'post'>
       {% csrf_token %}
 
-      <textarea name="text_rep" rows="10" maxlength="2000" required
-      autofocus class="form-control">{{ text_rep }}</textarea>
-      
-      <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
-        <label class="btn btn-secondary active">
-          <input type="radio" name="shuffle" value="no_shuffle" checked> Don't shuffle
-        </label>
-        <label class="btn btn-secondary">
-          <input type="radio" name="shuffle" value="shuffle"> Shuffle
-        </label>
-      </div>
+      <input type="text" name="name" maxlength="200" value="{{ level.name }}" 
+      class="form-control" />
 
+      <textarea name="text_rep" rows="10" maxlength="2000" 
+      class="form-control">{{ text_rep }}</textarea>
+      
       <button name="submit" class="form-control btn-primary btn-block mt-3 mb-3">
         Submit
       </button>

@@ -113,23 +113,22 @@ def edit(request,level_id):
 
         context = {'text_rep': text_rep,
                    'level': level,
-                   #'level_id': level_id
                   }
         return render(request, 'flashcards/edit.html', context)
     else:
-        QuestionAnswer.objects.filter(level_id=level_id).delete()
-
-        request.session["question_list"] = []
-        request.session["score"] = 0
-
+        # We will first update the name of the level, than the questions.
         try:
-            shuffle = request.POST.get("shuffle")
+            name = request.POST.get("name")
+        except ValueError:
+            return HttpResponseBadRequest()
+        level.name = name
+        level.save()
+
+        QuestionAnswer.objects.filter(level_id=level_id).delete()
+        try:
             text_rep = request.POST.get("text_rep").split("\r\n")
         except ValueError:
             return HttpResponseBadRequest()
-
-        if shuffle == "shuffle":
-            random.shuffle(text_rep)
 
         for line in text_rep:
             question_answer = line.split(",")

@@ -16,7 +16,7 @@
     {% else %}
       <br />
     {% endif %}
-  <h2>{{ current_question.question }}</h2>
+  <div class = "chinese_font">{{ current_question.question }}</div><br />
   <form action="{% url 'flashcards:quiz' level_id %}" method = 'post'>
     {% csrf_token %}
     <div class="formgroup">

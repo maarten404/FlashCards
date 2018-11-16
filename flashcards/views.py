@@ -20,8 +20,9 @@ def select_level(request):
 
     awards = {}
 
-    for level in LevelUser.objects.filter(user=request.user):
-        awards[level.level.id] = level.award()
+    if request.user.is_authenticated:
+        for level in LevelUser.objects.filter(user=request.user):
+            awards[level.level.id] = level.award()
 
     print(awards)
         
@@ -35,21 +36,10 @@ def select_level(request):
 def quiz(request, level_id):
     level = get_object_or_404(Level,id=level_id)
 
-    # we get the question_nr from the session, will update it in this function
-    # when necessary and write it back to the session in the end
-
-    if "current_question_nr" in request.session:
-        current_question_nr = request.session.get("current_question_nr")
-    else:
-        current_question_nr = 0
-        request.session["current_question_nr"] = 0
-        request.session["score"] = 0
-    
-    # if we the answer is correct we add 1 to the score. We give feedback
-    # with the results from the last answer.
+    # if there's an answer in the request, we check if it's correct, add 1 to
+    # the score and give back the question and the answer.
 
     prev_question = {}
-
     if "answer" in request.POST:
         question = QuestionAnswer.objects.get(id=request.POST.get("question_id"))
 
@@ -60,44 +50,48 @@ def quiz(request, level_id):
             prev_question["correct"] = False
         
         prev_question["question"] = question
-        current_question_nr += 1
 
+    if "question_list" in request.session:
+        question_list = request.session["question_list"]
+        if question_list == []: # quiz is done
+            score = request.session["score"]
+            potential_score = len(QuestionAnswer.objects.filter(level=level))
+            context = {'score': score,
+                       'potential_score': potential_score,
+                       'prev_question': prev_question,
+                       'award': "",}
+            if request.user.is_authenticated:
+                try:
+                    topscore = LevelUser.objects.get(level_id=level_id,user=request.user).topscore
+                except LevelUser.DoesNotExist:
+                    topscore = 0
 
-    # If all questions are done, we go to the end template showing the score
-    # we also remove current_question_nr and score from the session so that
-    # next round we start with a clean slate
-    # to do: make django do the length in the query
-    if(current_question_nr >= 
-        len(QuestionAnswer.objects.filter(level_id=level_id))):
-        score = request.session["score"]
-        context = {'current_question_nr': current_question_nr,
-                   'score': score,
-                   'prev_question': prev_question,
-                   'award': "",}
-        if request.user.is_authenticated:
-            try:
-                topscore = LevelUser.objects.get(level_id=level_id,user=request.user).topscore
-            except LevelUser.DoesNotExist:
-                topscore = 0
+                if score >= topscore:
+                    LevelUser.objects.filter(level_id=level_id, user=request.user).delete()
+                    new_leveluser = LevelUser()
+                    new_leveluser.level = Level.objects.get(pk=level_id)
+                    new_leveluser.user = request.user
+                    new_leveluser.topscore = score
+                    new_leveluser.save()
+                    context["award"] = new_leveluser.award()
 
-            if score >= topscore:
-                LevelUser.objects.filter(level_id=level_id, user=request.user).delete()
-                new_leveluser = LevelUser()
-                new_leveluser.level = Level.objects.get(pk=level_id)
-                new_leveluser.user = request.user
-                new_leveluser.topscore = score
-                new_leveluser.save()
-                context["award"] = new_leveluser.award()
+            del request.session["question_list"]
+            del request.session["score"]
+            return render(request, 'flashcards/end.html', context)
+    else:
+        # new quiz: fill question_list
+        request.session["score"] = 0
+        question_list = list(
+            QuestionAnswer.objects.filter(level=level).values_list('id', flat = True)
+            )
+        print(question_list)
+        random.shuffle(question_list)
 
-        del request.session["current_question_nr"]
-        del request.session["score"]
-        return render(request, 'flashcards/end.html', context)
+    current_question = QuestionAnswer.objects.get(pk=question_list.pop())
 
-    request.session["current_question_nr"] = current_question_nr
-
-    context = {'current_question': 
-        QuestionAnswer.objects.filter(level_id=level_id).order_by('id')[current_question_nr],
-               'current_question_nr': current_question_nr,
+    request.session["question_list"] = question_list
+    
+    context = {'current_question': current_question,
                'prev_question': prev_question,
                'score': request.session["score"],
                'level_id': level_id,
@@ -122,8 +116,7 @@ def edit(request,level_id):
     else:
         QuestionAnswer.objects.filter(level_id=level_id).delete()
 
-        current_question_nr = 0
-        request.session["current_question_nr"] = 0
+        request.session["question_list"] = []
         request.session["score"] = 0
 
         try:

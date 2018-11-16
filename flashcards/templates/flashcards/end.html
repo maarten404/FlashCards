@@ -16,7 +16,7 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h4>You're done!</h4>
-      <h1>Score: {{ score }}/{{ current_question_nr }}</h1>
+      <h1>Score: {{ score }}/{{ potential_score }}</h1>
       <h1>{{ award }}</h1>
       <a class="btn btn-primary" href="{% url 'flashcards:index' %}" role="button">
         Restart

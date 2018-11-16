@@ -23,8 +23,6 @@ def select_level(request):
     if request.user.is_authenticated:
         for level in LevelUser.objects.filter(user=request.user):
             awards[level.level.id] = level.award()
-
-    print(awards)
         
     context = {'levels': levels,
                'awards': awards,
@@ -51,8 +49,20 @@ def quiz(request, level_id):
         
         prev_question["question"] = question
 
-    if "question_list" in request.session:
+    # we make a shuffled question_id list if there is none. If there is, we 
+    # check if the list is empty because if so the quiz is done end we show
+    # the end view and update the top score.
+
+    if "question_list" not in request.session:
+        # new quiz: fill question_list
+        request.session["score"] = 0
+        question_list = list(
+            QuestionAnswer.objects.filter(level=level).values_list('id', flat = True)
+            )
+        random.shuffle(question_list)
+    else:
         question_list = request.session["question_list"]
+
         if question_list == []: # quiz is done
             score = request.session["score"]
             potential_score = len(QuestionAnswer.objects.filter(level=level))
@@ -78,14 +88,7 @@ def quiz(request, level_id):
             del request.session["question_list"]
             del request.session["score"]
             return render(request, 'flashcards/end.html', context)
-    else:
-        # new quiz: fill question_list
-        request.session["score"] = 0
-        question_list = list(
-            QuestionAnswer.objects.filter(level=level).values_list('id', flat = True)
-            )
-        print(question_list)
-        random.shuffle(question_list)
+
 
     current_question = QuestionAnswer.objects.get(pk=question_list.pop())
 

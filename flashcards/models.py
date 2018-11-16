@@ -28,8 +28,7 @@ class LevelUser(models.Model):
     topscore = models.PositiveSmallIntegerField()
     
     def award(self):
-        # todo: figure out how to do a count(*) properly
-        potential_score = len(QuestionAnswer.objects.filter(level=self.level))
+        potential_score = QuestionAnswer.objects.filter(level=self.level).count()
         if self.topscore == potential_score:
             return "🥇"
         elif self.topscore/potential_score >= .8:

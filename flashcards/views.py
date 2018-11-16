@@ -65,7 +65,7 @@ def quiz(request, level_id):
 
         if question_list == []: # quiz is done
             score = request.session["score"]
-            potential_score = len(QuestionAnswer.objects.filter(level=level))
+            potential_score = QuestionAnswer.objects.filter(level=level).count()
             context = {'score': score,
                        'potential_score': potential_score,
                        'prev_question': prev_question,

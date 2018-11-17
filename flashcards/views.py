@@ -74,6 +74,7 @@ def quiz(request, level_id):
             score = request.session["score"]
             potential_score = QuestionAnswer.objects.filter(level=level).count()
             context = {'score': score,
+                       'level': level,
                        'potential_score': potential_score,
                        'prev_question': prev_question,
                        'award': "",}

@@ -1,16 +1,11 @@
-import random
-
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 
+from .helper import new_question_list
 from .models import QuestionAnswer, Level, LevelUser
 
 def index(request):
-    if "question_list" in request.session:
-        del request.session["question_list"]
-    if "score" in request.session:
-        del request.session["score"]
     return render(request, 'flashcards/index.html')
 
 def about(request):
@@ -30,6 +25,11 @@ def select_level(request):
     if request.user.is_authenticated:
         for level in LevelUser.objects.filter(user=request.user):
             awards[level.level.id] = level.award()
+
+    if "question_list" in request.session:
+        del request.session["question_list"]
+    if "score" in request.session:
+        del request.session["score"]
         
     context = {'levels': levels,
                'awards': awards,
@@ -63,10 +63,7 @@ def quiz(request, level_id):
     if "question_list" not in request.session:
         # new quiz: fill question_list
         request.session["score"] = 0
-        question_list = list(
-            QuestionAnswer.objects.filter(level=level).values_list('id', flat = True)
-            )
-        random.shuffle(question_list)
+        question_list = new_question_list(level)
     else:
         question_list = request.session["question_list"]
 
@@ -99,6 +96,11 @@ def quiz(request, level_id):
 
 
     current_question = QuestionAnswer.objects.get(pk=question_list.pop())
+
+    if current_question.level != level:
+        print("Yeah this is not the correct level.")
+        request.session["score"] = 0
+        question_list = new_question_list(level)
 
     request.session["question_list"] = question_list
     

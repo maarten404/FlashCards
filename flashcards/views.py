@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models.functions import Lower
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 
@@ -18,7 +19,7 @@ def select_level(request):
     else:
         next_page = "quiz"
 
-    levels = Level.objects.all()
+    levels = Level.objects.order_by(Lower('name'))
 
     awards = {}
 

@@ -1,0 +1,34 @@
+{% extends "flashcards/base.html" %}
+{% load bootstrap4 %}
+{% load fontawesome %}
+
+{% block content %}
+current_question: {{ current_question.question }}, {{current_question.answer}}<br/>
+prev_question: {{ prev_question.question }}, {{prev_question.answer}}<br/>
+question_list: {{ question_list }}
+
+    {% if prev_question %}
+      {% if prev_question.correct == True %}
+        {% fontawesome_icon 'check-circle' color='green' large=True %}
+      {% else %}
+        {% fontawesome_icon 'times-circle' color='red' large=True %}
+      {% endif %}
+      {{ prev_question.question.question }} = {{ prev_question.question.answer }}
+    {% else %}
+      <br />
+    {% endif %}
+  <div class = "chinese_font">{{ current_question.question }}</div><br />
+  <form action="{% url 'flashcards:practice' %}" method = 'post'>
+    {% csrf_token %}
+    <div class="formgroup">
+      <input type="text" name="answer" maxlength="200" id="id_answer" autofocus 
+      placeholder="answer..." class="form-control" />
+      <input type="hidden" name="question_id" value = "{{ current_question.id }}">
+      <button name="submit" class="btn btn-primary btn-block mt-3 mb-3">
+        Submit
+      </button>
+    </div>
+
+  </form>
+
+{% endblock content %}

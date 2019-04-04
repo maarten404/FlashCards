@@ -112,6 +112,60 @@ def quiz(request, level_id):
                }
     return render(request, 'flashcards/quiz.html', context)
 
+def practice(request):
+    # if there's an answer in the request, we check if it's correct, add 1 to
+    # the score and give back the question and the answer.
+
+    prev_question = {}
+    if "answer" in request.POST:
+        question = QuestionAnswer.objects.get(id=request.POST.get("question_id"))
+
+        if(str.lower(request.POST.get("answer")) == question.answer):
+            prev_question["correct"] = True
+            request.session["score"] += 1
+        else:
+            prev_question["correct"] = False
+        
+        prev_question["question"] = question
+
+    # if there is no question list in the session, we take ten random questions
+    if "question_list" not in request.session:
+        question_list = list(
+        QuestionAnswer.objects.order_by('?').values_list('id', flat = True)[:10]
+        )
+        request.session["score"] = 0
+    # if the list is there but empty the practice is done
+    elif request.session["question_list"] == []:
+
+            context = {'score': request.session["score"],
+                       'potential_score': 10,
+                       'prev_question': prev_question,
+                       'award': "",}
+
+            del request.session["question_list"]
+            del request.session["score"]
+
+            return render(request, 'flashcards/end.html', context)
+    # if there is a question_list we are midpractice so we get the list
+    else:
+        question_list = request.session["question_list"]
+
+    # the current question we get from the question_id list
+    current_question = QuestionAnswer.objects.get(pk=question_list.pop())
+
+    request.session["question_list"] = question_list
+    
+
+    context = {'current_question': current_question,
+               'prev_question': prev_question,
+               'score': request.session["score"],
+               'question_list': question_list}
+
+    return render(request, 'flashcards/practice.html', context)
+
+
+
+
 @login_required
 def edit(request,level_id):
     if level_id != 0:

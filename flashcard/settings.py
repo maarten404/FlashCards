@@ -155,3 +155,4 @@ if cwd == '/app' or cwd[:4] == '/tmp': # if we're running on Heroku
 
 # My settings
 LOGIN_URL = '/login/'
+LENGTH_PRACTICE = 10

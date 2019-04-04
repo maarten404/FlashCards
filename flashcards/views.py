@@ -8,7 +8,17 @@ from .helper import new_question_list
 from .models import QuestionAnswer, Level, LevelUser
 
 def index(request):
-    return render(request, 'flashcards/index.html')
+    context = {}
+    context["show_practice"] = False
+
+    if request.user.is_authenticated:
+        levels_with_topscore = LevelUser.objects.filter(
+            user=request.user,topscore_perc_m=1)
+
+        if len(levels_with_topscore) > 0:
+            context["show_practice"] = True
+
+    return render(request, 'flashcards/index.html', context)
 
 def about(request):
     return render(request, 'flashcards/about.html')
@@ -137,10 +147,19 @@ def practice(request):
 
     # if there is no question list in the session, we take ten random questions
     if "question_list" not in request.session:
-        question_list = list(
-        QuestionAnswer.objects.order_by('?').values_list('id',
-            flat = True)[:settings.LENGTH_PRACTICE]
-        )
+        if request.user.is_authenticated:
+           question_list = list(
+                QuestionAnswer.objects.filter(
+                    level__leveluser__user=request.user).filter(
+                    level__leveluser__topscore_perc_m=1).order_by('?').values_list('id',
+                    flat = True)[:settings.LENGTH_PRACTICE]
+                )
+        else:
+            return HttpResponseBadRequest()
+
+        if question_list == []:
+            return HttpResponseBadRequest()
+
         request.session["score"] = 0
         request.session["nr_tries"] = 0
     # if there is a question_list we are midpractice so we get the list

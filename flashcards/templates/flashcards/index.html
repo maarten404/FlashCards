@@ -12,10 +12,12 @@
     role="button">
         Start quiz
     </a>
-    <a class="btn btn-secondary btn-block" href="{% url 'flashcards:practice' %}" 
+    {% if show_practice %}
+    <a class="btn btn-primary btn-block" href="{% url 'flashcards:practice' %}" 
       role="button">
-      Random practice
+      Practice your finished levels
     </a>
+    {% endif %}
     {% if user.is_authenticated %}
       <a class="btn btn-secondary btn-block" href="{% url 'users:logout' %}" 
       role="button">

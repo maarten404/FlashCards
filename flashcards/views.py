@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import Lower
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
@@ -70,7 +71,8 @@ def quiz(request, level_id):
 
         if question_list == []: # quiz is done
             score = request.session["score"]
-            potential_score = QuestionAnswer.objects.filter(level=level).count()
+            potential_score = QuestionAnswer.objects.filter(
+                level=level).count()
             context = {'score': score,
                        'level': level,
                        'potential_score': potential_score,
@@ -78,12 +80,14 @@ def quiz(request, level_id):
                        'award': "",}
             if request.user.is_authenticated:
                 try:
-                    topscore = LevelUser.objects.get(level_id=level_id,user=request.user).topscore
+                    topscore = LevelUser.objects.get(
+                        level_id=level_id,user=request.user).topscore
                 except LevelUser.DoesNotExist:
                     topscore = 0
 
                 if score >= topscore:
-                    LevelUser.objects.filter(level_id=level_id, user=request.user).delete()
+                    LevelUser.objects.filter(level_id=level_id, 
+                                             user=request.user).delete()
                     new_leveluser = LevelUser()
                     new_leveluser.level = Level.objects.get(pk=level_id)
                     new_leveluser.user = request.user
@@ -122,7 +126,7 @@ def practice(request):
 
         if(str.lower(request.POST.get("answer")) == question.answer):
             prev_question["correct"] = True
-            if(request.session["nr_tries"] < 10):
+            if(request.session["nr_tries"] < settings.LENGTH_PRACTICE):
                 request.session["score"] += 1
         else:
             prev_question["correct"] = False
@@ -133,7 +137,8 @@ def practice(request):
     # if there is no question list in the session, we take ten random questions
     if "question_list" not in request.session:
         question_list = list(
-        QuestionAnswer.objects.order_by('?').values_list('id', flat = True)[:10]
+        QuestionAnswer.objects.order_by('?').values_list('id',
+            flat = True)[:settings.LENGTH_PRACTICE]
         )
         request.session["score"] = 0
         request.session["nr_tries"] = 0
@@ -148,11 +153,11 @@ def practice(request):
     # if the list is there and it is empty, the practice is done
     if question_list == []:
         award = ""
-        if request.session["score"] == 10:
+        if request.session["score"] == settings.LENGTH_PRACTICE:
             award = "🥇"
 
         context = {'score': request.session["score"],
-                   'potential_score': 10,
+                   'potential_score': settings.LENGTH_PRACTICE,
                    'prev_question': prev_question,
                    'award': award,}
 

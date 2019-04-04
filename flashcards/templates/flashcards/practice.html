@@ -3,9 +3,6 @@
 {% load fontawesome %}
 
 {% block content %}
-current_question: {{ current_question.question }}, {{current_question.answer}}<br/>
-prev_question: {{ prev_question.question }}, {{prev_question.answer}}<br/>
-question_list: {{ question_list }}
 
     {% if prev_question %}
       {% if prev_question.correct == True %}
@@ -30,5 +27,4 @@ question_list: {{ question_list }}
     </div>
 
   </form>
-
 {% endblock content %}

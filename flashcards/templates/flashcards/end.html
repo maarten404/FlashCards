@@ -16,7 +16,9 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       {% if level %}
-        <h4>You've finished: {{ level.name }}</h4>
+        <h4>You have finished: {{ level.name }}</h4>
+      {% else %}
+        <h4>You have finished random practice!</h4>
       {% endif %}
       
       <h1>Score: {{ score }}/{{ potential_score }}</h1>

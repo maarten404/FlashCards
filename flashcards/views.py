@@ -122,10 +122,12 @@ def practice(request):
 
         if(str.lower(request.POST.get("answer")) == question.answer):
             prev_question["correct"] = True
-            request.session["score"] += 1
+            if(request.session["nr_tries"] < 10):
+                request.session["score"] += 1
         else:
             prev_question["correct"] = False
         
+        request.session["nr_tries"] += 1
         prev_question["question"] = question
 
     # if there is no question list in the session, we take ten random questions
@@ -134,21 +136,30 @@ def practice(request):
         QuestionAnswer.objects.order_by('?').values_list('id', flat = True)[:10]
         )
         request.session["score"] = 0
-    # if the list is there but empty the practice is done
-    elif request.session["question_list"] == []:
-
-            context = {'score': request.session["score"],
-                       'potential_score': 10,
-                       'prev_question': prev_question,
-                       'award': "",}
-
-            del request.session["question_list"]
-            del request.session["score"]
-
-            return render(request, 'flashcards/end.html', context)
+        request.session["nr_tries"] = 0
     # if there is a question_list we are midpractice so we get the list
     else:
         question_list = request.session["question_list"]
+
+    #if the previous question was wrong we put it back into the question list
+    if prev_question.get("correct") == False:
+        question_list.insert(0,request.POST.get("question_id"))
+
+    # if the list is there and it is empty, the practice is done
+    if question_list == []:
+        award = ""
+        if request.session["score"] == 10:
+            award = "🥇"
+
+        context = {'score': request.session["score"],
+                   'potential_score': 10,
+                   'prev_question': prev_question,
+                   'award': award,}
+
+        del request.session["question_list"]
+        del request.session["score"]
+
+        return render(request, 'flashcards/end.html', context)
 
     # the current question we get from the question_id list
     current_question = QuestionAnswer.objects.get(pk=question_list.pop())

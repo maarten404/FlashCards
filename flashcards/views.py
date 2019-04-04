@@ -92,6 +92,7 @@ def quiz(request, level_id):
                     new_leveluser.level = Level.objects.get(pk=level_id)
                     new_leveluser.user = request.user
                     new_leveluser.topscore = score
+                    new_leveluser.topscore_perc_m = score/potential_score
                     new_leveluser.save()
                     context["award"] = new_leveluser.award()
 

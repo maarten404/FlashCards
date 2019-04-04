@@ -26,6 +26,9 @@ class LevelUser(models.Model):
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     topscore = models.PositiveSmallIntegerField()
+    topscore_perc_m = models.FloatField(blank=True,
+                                        null=True,
+                                        default=0)
     
     def award(self):
         potential_score = QuestionAnswer.objects.filter(level=self.level).count()

@@ -128,6 +128,13 @@ if cwd == '/app' or cwd[:4] == '/tmp': # if we're running on Heroku
     DATABASES = {
         'default': dj_database_url.config(default='postgres://localhost')
     }
+else: # for running on dev
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # My settings

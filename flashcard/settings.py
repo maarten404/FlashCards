@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     #https://pypi.org/project/django-fontawesome/
     'fontawesome',
 
-
     #my apps
     'flashcards',
     'users',
@@ -119,17 +118,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
-#Settings for Railway
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': '25vyFmYgtGG0cgdYWDzH',
-        'HOST': 'containers-us-west-130.railway.app',
-        'PORT': '5693',
+#Settings for Heroku
+
+cwd = os.getcwd() #current working directory
+if cwd == '/app' or cwd[:4] == '/tmp': # if we're running on Heroku
+    import dj_database_url
+
+    # In production we will use PostgreSQL instead of SQLite
+    DATABASES = {
+        'default': dj_database_url.config(default='postgres://localhost')
     }
-}
 
 
 # My settings

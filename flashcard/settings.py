@@ -25,7 +25,7 @@ SECRET_KEY = 'h%$q%mu%y=5ldms(ld#_r&eq75u!k=(k3ru4^ht&g+_fdwzjv2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'chinesecharacters.herokuapp.com']
 
 
 # Application definition
@@ -40,7 +40,6 @@ INSTALLED_APPS = [
 
     #external apps
     'bootstrap4',
-    'fontawesomefree',
 
     #my apps
     'flashcards',

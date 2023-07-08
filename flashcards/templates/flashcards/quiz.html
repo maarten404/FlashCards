@@ -1,6 +1,6 @@
 {% extends "flashcards/base.html" %}
 {% load bootstrap4 %}
-{% load fontawesome %}
+{% load fontawesomefree %}
 
 {% block content %}
   <p>
@@ -8,9 +8,9 @@
   </p>
     {% if prev_question %}
       {% if prev_question.correct == True %}
-        {% fontawesome_icon 'check-circle' color='green' large=True %}
+        ✅
       {% else %}
-        {% fontawesome_icon 'times-circle' color='red' large=True %}
+        ❌
       {% endif %}
       {{ prev_question.question.question }} = {{ prev_question.question.answer }}
     {% else %}

@@ -40,8 +40,7 @@ INSTALLED_APPS = [
 
     #external apps
     'bootstrap4',
-    #https://pypi.org/project/django-fontawesome/
-    'fontawesome',
+    'fontawesomefree',
 
     #my apps
     'flashcards',
@@ -140,3 +139,5 @@ else: # for running on dev
 # My settings
 LOGIN_URL = '/login/'
 LENGTH_PRACTICE = 10
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
